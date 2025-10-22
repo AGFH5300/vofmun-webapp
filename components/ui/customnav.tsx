@@ -1,6 +1,5 @@
-"use client";
 import React, { useState } from 'react';
-import Link from 'next/link';
+import { Link } from '@/src/router';
 import { useSession } from '@/app/context/sessionContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMobile } from '@/hooks/use-mobile';
@@ -16,27 +15,32 @@ import {
   LogOut
 } from 'lucide-react';
 
-const CustomNav = () => {
+interface CustomNavProps {
+  role?: 'delegate' | 'chair' | 'admin';
+  activeLink?: string;
+}
+
+const CustomNav: React.FC<CustomNavProps> = () => {
   const { user: currentUser, logout } = useSession();
   const isMobile = useMobile();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const navigationItems = [
-    { name: 'Home', href: '/home' },
-    { name: 'Live Updates', href: '/live-updates' },
-    { name: 'Glossary', href: '/glossary' },
-    { name: 'Speech Repository', href: '/speechrepo' },
-    { name: 'Resolutions', href: '/resolutions' },
-    { name: 'Messages', href: '/messages' },
+    { name: 'Home', to: '/home' },
+    { name: 'Live Updates', to: '/live-updates' },
+    { name: 'Glossary', to: '/glossary' },
+    { name: 'Speech Repository', to: '/speechrepo' },
+    { name: 'Resolutions', to: '/resolutions' },
+    { name: 'Messages', to: '/messages' },
   ];
 
   const adminItems = [
-    { name: 'Admin Panel', href: '/admin' },
+    { name: 'Admin Panel', to: '/admin' },
   ];
 
   const chairItems = [
-    { name: 'Chair Dashboard', href: '/chair' },
+    { name: 'Chair Dashboard', to: '/chair' },
   ];
 
   const getUserRole = () => {
@@ -83,7 +87,7 @@ const CustomNav = () => {
                   {navigationItems.map((item) => (
                     <Link
                       key={item.name}
-                      href={item.href}
+                      to={item.to}
                       className="flex items-center px-4 py-3 rounded-lg text-almost-black-green hover:text-deep-red hover:bg-soft-rose transition-colors font-medium"
                       onClick={() => setIsMenuOpen(false)}
                     >
@@ -94,7 +98,7 @@ const CustomNav = () => {
                   {currentUser && 'adminID' in currentUser && adminItems.map((item) => (
                     <Link
                       key={item.name}
-                      href={item.href}
+                      to={item.to}
                       className="flex items-center px-4 py-3 rounded-lg text-almost-black-green hover:text-deep-red hover:bg-soft-rose transition-colors font-medium"
                       onClick={() => setIsMenuOpen(false)}
                     >
@@ -105,7 +109,7 @@ const CustomNav = () => {
                   {currentUser && 'chairID' in currentUser && chairItems.map((item) => (
                     <Link
                       key={item.name}
-                      href={item.href}
+                      to={item.to}
                       className="flex items-center px-4 py-3 rounded-lg text-almost-black-green hover:text-deep-red hover:bg-soft-rose transition-colors font-medium"
                       onClick={() => setIsMenuOpen(false)}
                     >
@@ -151,7 +155,7 @@ const CustomNav = () => {
             {navigationItems.map((item) => (
               <Link
                 key={item.name}
-                href={item.href}
+                to={item.to}
                 className="px-3 py-2 text-almost-black-green hover:text-deep-red transition-colors font-medium text-sm"
               >
                 {item.name}
@@ -161,7 +165,7 @@ const CustomNav = () => {
             {currentUser && 'adminID' in currentUser && adminItems.map((item) => (
               <Link
                 key={item.name}
-                href={item.href}
+                to={item.to}
                 className="px-3 py-2 text-almost-black-green hover:text-deep-red transition-colors font-medium text-sm"
               >
                 {item.name}
@@ -171,7 +175,7 @@ const CustomNav = () => {
             {currentUser && 'chairID' in currentUser && chairItems.map((item) => (
               <Link
                 key={item.name}
-                href={item.href}
+                to={item.to}
                 className="px-3 py-2 text-almost-black-green hover:text-deep-red transition-colors font-medium text-sm"
               >
                 {item.name}

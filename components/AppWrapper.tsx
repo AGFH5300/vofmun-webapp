@@ -1,8 +1,7 @@
-"use client";
 import { useSession } from "../app/context/sessionContext";
 import CustomNav from "@/components/ui/customnav";
 import role from "@/lib/roles";
-import { usePathname } from "next/navigation";
+import { useRouter } from "@/src/router";
 
 interface AppWrapperProps {
   children: React.ReactNode;
@@ -10,7 +9,7 @@ interface AppWrapperProps {
 
 export default function AppWrapper({ children }: AppWrapperProps) {
   const { user: currentUser } = useSession();
-  const pathname = usePathname();
+  const { pathname } = useRouter();
   const userRole = role(currentUser);
   
   // Don't show navigation on login page

@@ -1,4 +1,3 @@
-"use client";
 import React, {
   createContext,
   useContext,
@@ -8,7 +7,7 @@ import React, {
 } from "react";
 import { Admin, Delegate, Chair, UserType } from "@/db/types";
 import Cookies from "js-cookie";
-import {useRouter} from "next/navigation";
+import { useRouter } from "@/src/router";
 // lot to explain here lolz
 interface SessionContextProps {
   user: UserType | null;
@@ -22,7 +21,7 @@ const SessionContext = createContext<SessionContextProps | undefined>(
 
 export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<Delegate | Admin | Chair | null>(null);
-  const routerInstance = useRouter();
+  const { navigate } = useRouter();
   const [isLoading, setIsLoading] =
     useState(true); /* this is very very very important
   
@@ -57,7 +56,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     setUser(null);
     Cookies.remove("user");
-    routerInstance.push("/login");
+    navigate("/login");
     console.log("SessionProvider: User logged out");
   };
 
