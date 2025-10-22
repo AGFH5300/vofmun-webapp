@@ -1,8 +1,6 @@
-"use client";
 import React from 'react'
 import {AdminRoute} from '@/components/protectedroute'
 import {toast} from 'sonner'
-import Image from 'next/image'
 
 const Page = () => {
     const [content, setContent] = React.useState<string>("");
@@ -85,7 +83,7 @@ const Page = () => {
               />
               {selectedFile && (
                 <div className="mt-4 flex flex-col items-center">
-                  <Image
+                  <img
                     src={URL.createObjectURL(selectedFile)}
                     alt="Preview"
                     className="w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-lg border border-gray-700 shadow-md mb-2"

@@ -1,7 +1,5 @@
-"use client";
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
+import { Link } from '@/src/router';
 import { motion } from 'framer-motion';
 import { useSession } from '../context/sessionContext';
 import { ProtectedRoute } from '@/components/protectedroute';
@@ -136,7 +134,7 @@ const Page = () => {
                     transition={{ duration: 0.6, delay: 0.1 * (index + 1) }}
                     className="group"
                   >
-                    <Link href={action.href}>
+                    <Link to={action.href}>
                       <div className={`bg-gradient-to-br ${action.color} rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 text-white group-hover:scale-105`}>
                         <div className="flex items-start justify-between mb-4">
                           <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
