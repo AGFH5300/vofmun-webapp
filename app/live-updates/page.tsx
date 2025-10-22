@@ -1,12 +1,11 @@
 
-"use client";
-import React, {useEffect} from 'react'
+import React, { useEffect } from 'react'
 import { Update } from '@/db/types'
-import Image from 'next/image'
 import { ProtectedRoute } from '@/components/protectedroute'
 import { useMobile } from '@/hooks/use-mobile'
 import { motion } from 'framer-motion'
 import { Bell, Clock, AlertTriangle } from 'lucide-react'
+import supabase from '@/lib/supabase'
 
 const Page = () => {
     const [isLoading, setIsLoading] = React.useState<boolean>(true);
@@ -17,11 +16,17 @@ const Page = () => {
         const fetchUpdates = async () => {
             try {
                 setIsLoading(true);
-                const res = await fetch('/api/updates');
-                const data = await res.json();
-                if (res.ok) {
-                    console.log("Successfully fetched updates:", data);
-                    
+                const { data, error } = await supabase
+                    .from('Updates')
+                    .select('*')
+                    .order('time', { ascending: false });
+
+                if (error) {
+                    console.error("Failed to fetch updates:", error);
+                    return;
+                }
+
+                if (data) {
                     data.forEach((update: Update) => {
                         if (update.href) {
                             console.log(`Update ${update.updateID} has image URL: ${update.href}`);
@@ -29,11 +34,8 @@ const Page = () => {
                             console.warn(`Update ${update.updateID} has no image URL`);
                         }
                     });
-                    
+
                     setUpdates(data);
-                }
-                else {
-                    console.error("Failed to fetch updates:", data);
                 }
             } catch (error) {
                 console.error("Error fetching updates:", error);
@@ -142,7 +144,11 @@ const Page = () => {
                                         <div className="lg:w-1/3">
                                             {update.href ? (
                                                 <div className="h-64 lg:h-full relative">
-                
+                                                    <img
+                                                        src={update.href}
+                                                        alt={`Update ${update.updateID} illustration`}
+                                                        className="absolute inset-0 w-full h-full object-cover rounded-2xl shadow-lg"
+                                                    />
                                                 </div>
                                             ) : (
                                                 <div className="h-64 lg:h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">

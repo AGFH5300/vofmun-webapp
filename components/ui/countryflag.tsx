@@ -1,5 +1,4 @@
 import React from "react";
-import Image from "next/image";
 
 interface CountryFlagProps {
   countryName: string;
@@ -10,7 +9,7 @@ interface CountryFlagProps {
 // Country name to ISO code mapping for common MUN countries
 const COUNTRY_CODE_MAP: Record<string, string> = {
   "United States": "us",
-  "United States of America": "us", 
+  "United States of America": "us",
   "USA": "us",
   "United Kingdom": "gb",
   "UK": "gb",
@@ -160,31 +159,27 @@ const getCountryCode = (countryName: string): string => {
   return COUNTRY_CODE_MAP[normalizedName]?.toLowerCase() || "un"; // fallback to UN flag
 };
 
-const CountryFlag: React.FC<CountryFlagProps> = ({ 
-  countryName, 
+const CountryFlag: React.FC<CountryFlagProps> = ({
+  countryName,
   className = "",
   size = "medium"
 }) => {
   const countryCode = getCountryCode(countryName);
-  
+
   const sizeClasses = {
     small: "w-6 h-4",
-    medium: "w-8 h-6", 
+    medium: "w-8 h-6",
     large: "w-12 h-9"
   };
 
   return (
     <div className={`inline-block ${sizeClasses[size]} ${className}`}>
-      <Image
+      <img
         src={`https://flagcdn.com/w80/${countryCode}.png`}
         alt={`${countryName} flag`}
-        width={80}
-        height={60}
         className="w-full h-full object-cover rounded-sm shadow-sm border border-cool-grey/30 hover:shadow-md transition-shadow duration-200"
-        unoptimized // Allow external images
-        onError={(e) => {
-          // Fallback to UN emblem if country flag fails to load
-          const target = e.target as HTMLImageElement;
+        onError={(event) => {
+          const target = event.currentTarget;
           target.src = "/images/logo.svg";
         }}
         data-testid={`flag-${countryCode}`}

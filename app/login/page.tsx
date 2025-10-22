@@ -1,10 +1,8 @@
 
-"use client";
 import React from "react";
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/src/router";
 import { useSession } from "../context/sessionContext";
-import Image from "next/image";
 import TypeWriter from "@/components/ui/typewriter";
 import supabase from "@/lib/supabase";
 import { useMobile } from "@/hooks/use-mobile";
@@ -17,7 +15,7 @@ const Login = () => {
   const [loading, setLoading] = React.useState(false);
   const [role, setRole] = React.useState("delegate");
   const [showPassword, setShowPassword] = React.useState(false);
-  const router = useRouter();
+  const { navigate } = useRouter();
   const { login } = useSession();
   const isMobile = useMobile();
 
@@ -55,7 +53,7 @@ const Login = () => {
         };
 
         login(adminUser);
-        router.push("/home");
+        navigate("/home");
         return;
       } else if (role === "chair") {
         const { data: chair, error: chairError } = await supabase
@@ -106,7 +104,7 @@ const Login = () => {
         };
 
         login(enrichedUser);
-        router.push("/home");
+        navigate("/home");
 
       } else {
         const { data: delegate, error: delegateError } = await supabase
@@ -161,7 +159,7 @@ const Login = () => {
         };
 
         login(enrichedUser);
-        router.push("/home");
+        navigate("/home");
       }
     } catch (err) {
       console.error("Login error:", err);
@@ -215,13 +213,12 @@ const Login = () => {
               transition={{ duration: 1, delay: 0.2 }}
               className="mb-8"
             >
-              <Image
+              <img
                 width={200}
                 height={200}
                 className="mx-auto drop-shadow-2xl"
                 src="/logo.svg"
                 alt="VOFMUN LOGO"
-                priority
               />
             </motion.div>
             
