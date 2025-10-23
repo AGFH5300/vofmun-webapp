@@ -126,12 +126,10 @@ const Login = () => {
 
         const { data: delegation, error: delegationError } = await supabase
           .from("Delegation")
-          .select(
-            `*,
+          .select(`*,
              Country:countryID (countryID, name, flag),
              Committee:committeeID (committeeID, name)
-          `
-          )
+          `)
           .eq("delegateID", delegate.delegateID)
           .single();
 
@@ -186,7 +184,7 @@ const Login = () => {
               <img
                 width={200}
                 height={200}
-                src="/images/logo.png"
+                src="/logo.svg"
                 alt="VOFMUN"
                 className="mx-auto"
               />
@@ -315,14 +313,14 @@ const Login = () => {
                 data-testid="button-login"
               >
                 {loading ? (
-                  <div className="flex items-center justify-center">
+                  <div className="flex items-center justify-center text-[#FFFDFB]">
                     <div className="mr-3 h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
                     Signing you in...
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center">
-                    <Rocket size={18} className="mr-2" />
-                    Enter MUN Hub
+                  <div className="flex items-center justify-center text-[#FFFDFB]">
+                    <Rocket size={18} className="mr-2 text-[#FFFDFB]" />
+                    <span className="text-[#FFFDFB]">Enter MUN Hub</span>
                   </div>
                 )}
               </button>
