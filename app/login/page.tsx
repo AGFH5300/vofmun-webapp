@@ -13,7 +13,6 @@ const Login = () => {
   const [password, setPassword] = React.useState("");
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
-  const [role, setRole] = React.useState("delegate");
   const [showPassword, setShowPassword] = React.useState(false);
   const { navigate } = useRouter();
   const { login } = useSession();
@@ -28,19 +27,13 @@ const Login = () => {
     const trimmedPassword = password.trim();
 
     try {
-      if (role === "admin") {
-        const { data: admin, error: adminError } = await supabase
-          .from("Admin")
-          .select("adminID, firstname, lastname, password")
-          .eq("adminID", trimmedEmail)
-          .single();
+      const { data: admin, error: adminError } = await supabase
+        .from("Admin")
+        .select("adminID, firstname, lastname, password")
+        .eq("adminID", trimmedEmail)
+        .maybeSingle();
 
-        if (adminError || !admin) {
-          setError("Admin email not found");
-          setLoading(false);
-          return;
-        }
-
+      if (!adminError && admin) {
         if (admin.password !== trimmedPassword) {
           setError("Incorrect password");
           setLoading(false);
@@ -55,17 +48,15 @@ const Login = () => {
         login(adminUser);
         navigate("/home");
         return;
-      } else if (role === "chair") {
-        const { data: chair, error: chairError } = await supabase
-          .from("Chair")
-          .select("*")
-          .eq("chairID", trimmedEmail)
-          .single();
-        if (chairError || !chair) {
-          setError("Chair email not found");
-          setLoading(false);
-          return;
-        }
+      }
+
+      const { data: chair, error: chairError } = await supabase
+        .from("Chair")
+        .select("*")
+        .eq("chairID", trimmedEmail)
+        .maybeSingle();
+
+      if (!chairError && chair) {
         if (chair.password !== trimmedPassword) {
           setError("Incorrect password");
           setLoading(false);
@@ -78,17 +69,18 @@ const Login = () => {
           .eq("chairID", trimmedEmail)
           .single();
 
-          if (IDerror || !committeeID) {
-            setError("Committee assignment not found");
-            setLoading(false);
-            return;
-          }
+        if (IDerror || !committeeID) {
+          setError("Committee assignment not found");
+          setLoading(false);
+          return;
+        }
 
-          const { data: committee, error: committeeError } = await supabase
+        const { data: committee, error: committeeError } = await supabase
           .from("Committee")
           .select("committeeID, name")
           .eq("committeeID", committeeID.committeeID)
           .single();
+
         if (committeeError || !committee) {
           setError("Committee not found");
           setLoading(false);
@@ -105,20 +97,16 @@ const Login = () => {
 
         login(enrichedUser);
         navigate("/home");
+        return;
+      }
 
-      } else {
-        const { data: delegate, error: delegateError } = await supabase
-          .from("Delegate")
-          .select("delegateID, email, password")
-          .eq("email", trimmedEmail)
-          .single();
+      const { data: delegate, error: delegateError } = await supabase
+        .from("Delegate")
+        .select("delegateID, email, password")
+        .eq("email", trimmedEmail)
+        .maybeSingle();
 
-        if (delegateError || !delegate) {
-          setError("Email not found");
-          setLoading(false);
-          return;
-        }
-
+      if (!delegateError && delegate) {
         if (delegate.password !== trimmedPassword) {
           setError("Incorrect password");
           setLoading(false);
@@ -160,7 +148,10 @@ const Login = () => {
 
         login(enrichedUser);
         navigate("/home");
+        return;
       }
+
+      setError("Account not found");
     } catch (err) {
       console.error("Login error:", err);
       setError("An error occurred during login. Please try again.");
@@ -168,28 +159,6 @@ const Login = () => {
       setLoading(false);
     }
   };
-
-  const getRoleInfo = () => {
-    switch(role) {
-      case 'admin':
-        return {
-          title: 'Administrator Portal',
-          subtitle: 'Administrative Control Center',
-        };
-      case 'chair':
-        return {
-          title: 'Chair Dashboard', 
-          subtitle: 'Committee Leadership Hub',
-        };
-      default:
-        return {
-          title: 'Delegate Portal',
-          subtitle: 'Your MUN Journey Begins Here',
-        };
-    }
-  };
-
-  const roleInfo = getRoleInfo();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
@@ -244,7 +213,7 @@ const Login = () => {
 
         {/* Right Side - Login Form */}
         <motion.div
-          className="lg:w-1/2 flex flex-col justify-center p-8 lg:p-12"
+          className="lg:w-1/2 flex flex-col justify-center p-8 lg:p-12 bg-[#FFEBDD]"
           initial={{ opacity: 0, x: isMobile ? 0 : 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
@@ -254,50 +223,39 @@ const Login = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="text-center mb-8"
+              className="text-center mb-10"
             >
-              <h1 className="text-3xl lg:text-4xl font-serif font-bold text-gray-900 mb-2" data-testid="text-login-header">
-                {roleInfo.title}
+              <span className="inline-flex items-center justify-center rounded-full bg-[#8B2424]/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-[#8B2424]">
+                Official Access
+              </span>
+              <h1
+                className="mt-6 text-4xl lg:text-5xl font-heading font-semibold text-[#1C1C1C]"
+                data-testid="text-login-header"
+              >
+                VOFMUN Portal
               </h1>
-              <p className="text-gray-600">{roleInfo.subtitle}</p>
+              <p className="mt-3 text-base text-[#701E1E]/80">
+                Sign in to manage your conference experience and stay connected.
+              </p>
             </motion.div>
 
             <motion.form
               onSubmit={handleSubmit}
-              className="space-y-6"
+              className="space-y-6 rounded-3xl border border-[#F4C5AF] bg-[#FFFDFB] p-8 shadow-[0_20px_45px_-20px_rgba(112,30,30,0.45)]"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
             >
-              {/* Role Selector */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Select Your Role
-                </label>
-                <div className="relative">
-                  <select
-                    className="w-full pl-4 pr-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-deep-red focus:border-transparent transition-all"
-                    value={role}
-                    onChange={(e) => setRole(e.target.value)}
-                    data-testid="select-user-role"
-                  >
-                    <option value="delegate">Delegate</option>
-                    <option value="chair">Chair</option>
-                    <option value="admin">Administrator</option>
-                  </select>
-                </div>
-              </div>
-
               {/* Email Field */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-semibold uppercase tracking-[0.2em] text-[#8B2424] mb-3">
                   Email Address
                 </label>
                 <div className="relative">
                   <input
                     type="email"
-                    placeholder={role === 'admin' ? 'Admin Email' : role === 'chair' ? 'Chair Email' : 'Your Email Address'}
-                    className="w-full pl-4 pr-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-deep-red focus:border-transparent transition-all"
+                    placeholder="Your Email Address"
+                    className="w-full rounded-xl border border-[#F1BBA3] bg-[#FFFDFB] px-4 py-3 text-[#1C1C1C] shadow-[0_8px_18px_-12px_rgba(139,36,36,0.6)] outline-none transition-all placeholder:text-[#8B2424]/40 focus:border-[#8B2424] focus:ring-4 focus:ring-[#8B2424]/30"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     data-testid="input-email"
@@ -307,21 +265,21 @@ const Login = () => {
 
               {/* Password Field */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-semibold uppercase tracking-[0.2em] text-[#8B2424] mb-3">
                   Password
                 </label>
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="Your Password"
-                    className="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-deep-red focus:border-transparent transition-all"
+                    className="w-full rounded-xl border border-[#F1BBA3] bg-[#FFFDFB] px-4 py-3 pr-12 text-[#1C1C1C] shadow-[0_8px_18px_-12px_rgba(139,36,36,0.6)] outline-none transition-all placeholder:text-[#8B2424]/40 focus:border-[#8B2424] focus:ring-4 focus:ring-[#8B2424]/30"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     data-testid="input-password"
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 transform text-[#8B2424]/60 transition-colors hover:text-[#701E1E]"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -331,17 +289,17 @@ const Login = () => {
 
               {/* Error Message */}
               {error && (
-                <motion.div 
-                  className="bg-red-50 border border-red-200 rounded-lg p-4"
+                <motion.div
+                  className="rounded-xl border border-[#F5A3A3] bg-[#FDECEC] p-4"
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   data-testid="error-message"
                 >
                   <div className="flex items-center">
-                    <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center mr-3">
-                      <span className="text-white text-xs">!</span>
+                    <div className="mr-3 flex h-6 w-6 items-center justify-center rounded-full bg-[#8B2424]/20 text-[#701E1E]">
+                      <span className="text-xs font-semibold">!</span>
                     </div>
-                    <p className="text-red-700 text-sm font-medium">{error}</p>
+                    <p className="text-sm font-medium text-[#8B2424]">{error}</p>
                   </div>
                 </motion.div>
               )}
@@ -349,22 +307,26 @@ const Login = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-deep-red to-dark-burgundy text-white py-3 px-6 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                className="w-full rounded-xl bg-[#701E1E] px-6 py-3 font-sans text-sm font-semibold uppercase tracking-[0.2em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#8B2424] hover:shadow-[0_20px_40px_-20px_rgba(112,30,30,0.65)] disabled:cursor-not-allowed disabled:bg-[#701E1E]/60 disabled:shadow-none"
                 disabled={loading}
                 data-testid="button-login"
               >
                 {loading ? (
                   <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-3"></div>
+                    <div className="mr-3 h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
                     Signing you in...
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center hover:pointer-cursor">
+                  <div className="flex items-center justify-center">
                     <Rocket size={18} className="mr-2" />
                     Enter MUN Hub
                   </div>
                 )}
               </button>
+
+              <p className="text-center text-xs font-medium uppercase tracking-[0.3em] text-[#8B2424]/60">
+                Secure Conference Access
+              </p>
             </motion.form>
           </div>
         </motion.div>
