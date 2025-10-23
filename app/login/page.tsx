@@ -13,7 +13,6 @@ const Login = () => {
   const [password, setPassword] = React.useState("");
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
-  const [role, setRole] = React.useState("delegate");
   const [showPassword, setShowPassword] = React.useState(false);
   const { navigate } = useRouter();
   const { login } = useSession();
@@ -28,19 +27,13 @@ const Login = () => {
     const trimmedPassword = password.trim();
 
     try {
-      if (role === "admin") {
-        const { data: admin, error: adminError } = await supabase
-          .from("Admin")
-          .select("adminID, firstname, lastname, password")
-          .eq("adminID", trimmedEmail)
-          .single();
+      const { data: admin, error: adminError } = await supabase
+        .from("Admin")
+        .select("adminID, firstname, lastname, password")
+        .eq("adminID", trimmedEmail)
+        .maybeSingle();
 
-        if (adminError || !admin) {
-          setError("Admin email not found");
-          setLoading(false);
-          return;
-        }
-
+      if (!adminError && admin) {
         if (admin.password !== trimmedPassword) {
           setError("Incorrect password");
           setLoading(false);
@@ -55,17 +48,15 @@ const Login = () => {
         login(adminUser);
         navigate("/home");
         return;
-      } else if (role === "chair") {
-        const { data: chair, error: chairError } = await supabase
-          .from("Chair")
-          .select("*")
-          .eq("chairID", trimmedEmail)
-          .single();
-        if (chairError || !chair) {
-          setError("Chair email not found");
-          setLoading(false);
-          return;
-        }
+      }
+
+      const { data: chair, error: chairError } = await supabase
+        .from("Chair")
+        .select("*")
+        .eq("chairID", trimmedEmail)
+        .maybeSingle();
+
+      if (!chairError && chair) {
         if (chair.password !== trimmedPassword) {
           setError("Incorrect password");
           setLoading(false);
@@ -78,17 +69,18 @@ const Login = () => {
           .eq("chairID", trimmedEmail)
           .single();
 
-          if (IDerror || !committeeID) {
-            setError("Committee assignment not found");
-            setLoading(false);
-            return;
-          }
+        if (IDerror || !committeeID) {
+          setError("Committee assignment not found");
+          setLoading(false);
+          return;
+        }
 
-          const { data: committee, error: committeeError } = await supabase
+        const { data: committee, error: committeeError } = await supabase
           .from("Committee")
           .select("committeeID, name")
           .eq("committeeID", committeeID.committeeID)
           .single();
+
         if (committeeError || !committee) {
           setError("Committee not found");
           setLoading(false);
@@ -105,20 +97,16 @@ const Login = () => {
 
         login(enrichedUser);
         navigate("/home");
+        return;
+      }
 
-      } else {
-        const { data: delegate, error: delegateError } = await supabase
-          .from("Delegate")
-          .select("delegateID, email, password")
-          .eq("email", trimmedEmail)
-          .single();
+      const { data: delegate, error: delegateError } = await supabase
+        .from("Delegate")
+        .select("delegateID, email, password")
+        .eq("email", trimmedEmail)
+        .maybeSingle();
 
-        if (delegateError || !delegate) {
-          setError("Email not found");
-          setLoading(false);
-          return;
-        }
-
+      if (!delegateError && delegate) {
         if (delegate.password !== trimmedPassword) {
           setError("Incorrect password");
           setLoading(false);
@@ -160,7 +148,10 @@ const Login = () => {
 
         login(enrichedUser);
         navigate("/home");
+        return;
       }
+
+      setError("Account not found");
     } catch (err) {
       console.error("Login error:", err);
       setError("An error occurred during login. Please try again.");
@@ -168,28 +159,6 @@ const Login = () => {
       setLoading(false);
     }
   };
-
-  const getRoleInfo = () => {
-    switch(role) {
-      case 'admin':
-        return {
-          title: 'Administrator Portal',
-          subtitle: 'Administrative Control Center',
-        };
-      case 'chair':
-        return {
-          title: 'Chair Dashboard', 
-          subtitle: 'Committee Leadership Hub',
-        };
-      default:
-        return {
-          title: 'Delegate Portal',
-          subtitle: 'Your MUN Journey Begins Here',
-        };
-    }
-  };
-
-  const roleInfo = getRoleInfo();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
@@ -257,9 +226,9 @@ const Login = () => {
               className="text-center mb-8"
             >
               <h1 className="text-3xl lg:text-4xl font-serif font-bold text-gray-900 mb-2" data-testid="text-login-header">
-                {roleInfo.title}
+                VOFMUN Portal
               </h1>
-              <p className="text-gray-600">{roleInfo.subtitle}</p>
+              <p className="text-gray-600">Sign in to access your conference tools</p>
             </motion.div>
 
             <motion.form
@@ -269,25 +238,6 @@ const Login = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
             >
-              {/* Role Selector */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Select Your Role
-                </label>
-                <div className="relative">
-                  <select
-                    className="w-full pl-4 pr-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-deep-red focus:border-transparent transition-all"
-                    value={role}
-                    onChange={(e) => setRole(e.target.value)}
-                    data-testid="select-user-role"
-                  >
-                    <option value="delegate">Delegate</option>
-                    <option value="chair">Chair</option>
-                    <option value="admin">Administrator</option>
-                  </select>
-                </div>
-              </div>
-
               {/* Email Field */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -296,7 +246,7 @@ const Login = () => {
                 <div className="relative">
                   <input
                     type="email"
-                    placeholder={role === 'admin' ? 'Admin Email' : role === 'chair' ? 'Chair Email' : 'Your Email Address'}
+                    placeholder="Your Email Address"
                     className="w-full pl-4 pr-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-deep-red focus:border-transparent transition-all"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
