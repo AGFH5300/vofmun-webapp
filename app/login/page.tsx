@@ -1,4 +1,3 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "@/src/router";
@@ -127,10 +126,12 @@ const Login = () => {
 
         const { data: delegation, error: delegationError } = await supabase
           .from("Delegation")
-          .select(`*,
-            Country:countryID (countryID, name, flag),
-            Committee:committeeID (committeeID, name)
-          `)
+          .select(
+            `*,
+             Country:countryID (countryID, name, flag),
+             Committee:committeeID (committeeID, name)
+          `
+          )
           .eq("delegateID", delegate.delegateID)
           .single();
 
@@ -162,20 +163,20 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
-      <div className="flex flex-col lg:flex-row min-h-screen">
+      <div className="flex min-h-screen flex-col lg:flex-row">
         {/* Left Side - Branding */}
         <motion.div
-          className="lg:w-1/2 bg-gradient-to-br from-deep-red to-dark-burgundy flex flex-col justify-center items-center p-8 lg:p-12 text-white relative overflow-hidden"
+          className="relative overflow-hidden lg:w-1/2 bg-gradient-to-br from-deep-red to-dark-burgundy flex flex-col justify-center items-center p-8 lg:p-12 text-white"
           initial={{ opacity: 0, x: isMobile ? 0 : -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
         >
           {/* Background decoration */}
           <div className="absolute inset-0 bg-gradient-to-br from-transparent via-black/10 to-black/20"></div>
-          <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
-          <div className="absolute bottom-20 right-10 w-40 h-40 bg-white/5 rounded-full blur-2xl"></div>
-          
-          <div className="relative z-10 text-center max-w-md">
+          <div className="absolute top-10 left-10 h-32 w-32 rounded-full bg-white/10 blur-xl"></div>
+          <div className="absolute bottom-20 right-10 h-40 w-40 rounded-full bg-white/5 blur-2xl"></div>
+
+          <div className="relative z-10 max-w-md text-center">
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -185,12 +186,12 @@ const Login = () => {
               <img
                 width={200}
                 height={200}
-                className="mx-auto drop-shadow-2xl"
-                src="/logo.svg"
-                alt="VOFMUN LOGO"
+                src="/images/logo.png"
+                alt="VOFMUN"
+                className="mx-auto"
               />
             </motion.div>
-            
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -198,14 +199,14 @@ const Login = () => {
             >
               <TypeWriter />
             </motion.div>
-            
+
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
-              className="text-lg text-white/90 leading-relaxed mt-6"
+              className="mt-6 text-lg leading-relaxed text-white/90"
             >
-              Empowering the next generation of global leaders through diplomacy, 
+              Empowering the next generation of global leaders through diplomacy,
               debate, and international cooperation.
             </motion.p>
           </div>
@@ -218,12 +219,12 @@ const Login = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          <div className="max-w-md mx-auto w-full">
+          <div className="mx-auto w-full max-w-md">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="text-center mb-10"
+              className="mb-10 text-center"
             >
               <span className="inline-flex items-center justify-center rounded-full bg-[#8B2424]/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-[#8B2424]">
                 Official Access
@@ -248,7 +249,7 @@ const Login = () => {
             >
               {/* Email Field */}
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-[0.2em] text-[#8B2424] mb-3">
+                <label className="mb-3 block text-xs font-semibold uppercase tracking-[0.2em] text-[#8B2424]">
                   Email Address
                 </label>
                 <div className="relative">
@@ -265,7 +266,7 @@ const Login = () => {
 
               {/* Password Field */}
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-[0.2em] text-[#8B2424] mb-3">
+                <label className="mb-3 block text-xs font-semibold uppercase tracking-[0.2em] text-[#8B2424]">
                   Password
                 </label>
                 <div className="relative">
@@ -299,7 +300,9 @@ const Login = () => {
                     <div className="mr-3 flex h-6 w-6 items-center justify-center rounded-full bg-[#8B2424]/20 text-[#701E1E]">
                       <span className="text-xs font-semibold">!</span>
                     </div>
-                    <p className="text-sm font-medium text-[#8B2424]">{error}</p>
+                    <p className="text-sm font-medium text-[#8B2424]">
+                      {error}
+                    </p>
                   </div>
                 </motion.div>
               )}
