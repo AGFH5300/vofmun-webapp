@@ -91,17 +91,6 @@ body {
   line-height: 1.6;
 }
 
-body.super-cursor-active {
-  cursor: none;
-}
-
-body.super-cursor-active input,
-body.super-cursor-active textarea,
-body.super-cursor-active [contenteditable="true"],
-body.super-cursor-active [data-super-cursor="text"] {
-  cursor: text;
-}
-
 /* Typography Styles - Complete New Design */
 
 /* Headings (H1–H6) - Serif fonts with specified weights and colors */
@@ -150,10 +139,17 @@ h6 {
 }
 
 /* Paragraphs / Body Text - Sans-serif with specified weights and colors */
-p, body, div, span, li, td, th {
+p, body, li, td, th {
+  font-family: var(--font-sans);
+  font-weight: 400; 
+  color: var(--almost-black-green);
+  line-height: 1.6;
+}
+
+div,
+span {
   font-family: var(--font-sans);
   font-weight: 400; /* Regular (400) */
-  color: var(--almost-black-green); /* Almost Black Green for high readability */
   line-height: 1.6;
 }
 
