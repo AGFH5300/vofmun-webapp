@@ -2,6 +2,7 @@ import { useSession } from "../app/context/sessionContext";
 import CustomNav from "@/components/ui/customnav";
 import role from "@/lib/roles";
 import { useRouter } from "@/src/router";
+import AmazingCursor from "@/components/ui/AmazingCursor";
 
 interface AppWrapperProps {
   children: React.ReactNode;
@@ -30,9 +31,10 @@ export default function AppWrapper({ children }: AppWrapperProps) {
 
   return (
     <>
+      <AmazingCursor />
       {showNav && (
-        <CustomNav 
-          role={userRole as 'delegate' | 'chair' | 'admin'} 
+        <CustomNav
+          role={userRole as 'delegate' | 'chair' | 'admin'}
           activeLink={getActiveLink()}
         />
       )}
