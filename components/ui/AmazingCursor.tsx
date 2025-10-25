@@ -85,48 +85,69 @@ const AmazingCursor = () => {
     return null;
   }
 
-  const scale = isPressed ? 0.75 : isClickable ? 1.15 : 1;
+  const scale = isPressed ? 0.9 : isClickable ? 1.05 : 1;
+  const pointerColor = isClickable ? 'rgba(124, 58, 237, 0.95)' : 'rgba(15, 23, 42, 0.95)';
+  const pointerStroke = isClickable ? 'rgba(255, 255, 255, 0.6)' : 'rgba(255, 255, 255, 0.45)';
+  const pointerShadow = isPressed
+    ? 'drop-shadow(0 2px 8px rgba(15, 23, 42, 0.35))'
+    : isClickable
+    ? 'drop-shadow(0 4px 14px rgba(124, 58, 237, 0.45))'
+    : 'drop-shadow(0 4px 12px rgba(15, 23, 42, 0.35))';
 
   return (
     <div
       aria-hidden
-      className={`pointer-events-none fixed inset-0 z-[9999] transition-opacity duration-200 ease-out ${isVisible && !isTextField ? 'opacity-100' : 'opacity-0'}`}
+      className={`pointer-events-none fixed inset-0 z-[9999] transition-opacity duration-150 ease-out ${
+        isVisible && !isTextField ? 'opacity-100' : 'opacity-0'
+      }`}
       style={{ transform: `translate3d(${position.x}px, ${position.y}px, 0)` }}
     >
       <div
         className="relative"
         style={{
-          transform: `translate3d(-50%, -50%, 0) scale(${scale})`,
-          transition: 'transform 150ms ease-out',
+          transform: `translate3d(-4px, -1px, 0) scale(${scale})`,
+          transition: 'transform 140ms ease-out',
         }}
       >
-        <span
-          className="absolute left-1/2 top-1/2 block h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.55),rgba(155,92,246,0.45)_45%,rgba(255,95,109,0.4)_70%,rgba(255,195,113,0.35))] opacity-70 blur-3xl"
-          style={{
-            transition: 'opacity 200ms ease-out, filter 200ms ease-out',
-            opacity: isPressed ? 0.4 : isClickable ? 0.85 : 0.7,
-          }}
-        />
-        <span
-          className="relative block h-12 w-12 rounded-full border border-white/40 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.75),rgba(155,92,246,0.6)_45%,rgba(255,95,109,0.55)_70%,rgba(255,195,113,0.5))] shadow-[0_0_35px_rgba(155,92,246,0.35)] backdrop-blur-[2px]"
-          style={{
-            transition: 'box-shadow 200ms ease-out, border 200ms ease-out',
-            boxShadow: isPressed
-              ? '0 0 45px rgba(255,95,109,0.45)'
-              : isClickable
-              ? '0 0 55px rgba(155,92,246,0.55)'
-              : '0 0 35px rgba(155,92,246,0.35)',
-            mixBlendMode: 'screen',
-          }}
-        />
-        <span
-          className="absolute left-1/2 top-1/2 block h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white"
-          style={{
-            transition: 'transform 150ms ease-out, opacity 150ms ease-out',
-            transform: `translate(-50%, -50%) scale(${isPressed ? 0.5 : isClickable ? 1.4 : 1})`,
-            opacity: isTextField ? 0 : 1,
-          }}
-        />
+        {!isTextField && (
+          <svg
+            className="block"
+            width={28}
+            height={32}
+            viewBox="0 0 28 32"
+            style={{
+              filter: pointerShadow,
+              transition: 'filter 160ms ease-out',
+            }}
+          >
+            <path
+              d="M3.5 1L3.5 21.2L8.6 16.4L13.8 29L17.4 27.4L12.2 14.8L19.8 15L3.5 1Z"
+              fill={pointerColor}
+              stroke={pointerStroke}
+              strokeWidth={1.2}
+              strokeLinejoin="round"
+            />
+          </svg>
+        )}
+        {!isTextField && (
+          <span
+            className="absolute left-[18px] top-[20px] block h-3 w-3 rounded-full bg-white/70"
+            style={{
+              opacity: isClickable ? 0.9 : 0.6,
+              transition: 'opacity 180ms ease-out',
+            }}
+          />
+        )}
+        {isTextField && (
+          <span
+            className="block h-8 w-[2px] rounded-full bg-gradient-to-b from-slate-200 via-slate-100 to-slate-300"
+            style={{
+              transform: `translate3d(-1px, -20px, 0) scaleY(${isPressed ? 0.8 : 1})`,
+              transition: 'transform 140ms ease-out',
+              boxShadow: '0 0 10px rgba(15, 23, 42, 0.35)',
+            }}
+          />
+        )}
       </div>
     </div>
   );
