@@ -5,10 +5,10 @@ type CursorKind = "default" | "clickable" | "text";
 const INTERACTIVE_TARGETS = [
   "a",
   "button",
-  "[role=\"button\"]",
-  "[data-super-cursor=\"interactive\"]",
-  "input[type=\"checkbox\"]",
-  "input[type=\"radio\"]",
+  '[role="button"]',
+  '[data-super-cursor="interactive"]',
+  'input[type="checkbox"]',
+  'input[type="radio"]',
   "select",
   "summary",
   ".cursor-pointer",
@@ -17,8 +17,8 @@ const INTERACTIVE_TARGETS = [
 const TEXT_TARGETS = [
   "input",
   "textarea",
-  "[contenteditable=\"true\"]",
-  "[data-super-cursor=\"text\"]",
+  '[contenteditable="true"]',
+  '[data-super-cursor="text"]',
   ".cursor-text",
 ];
 
@@ -40,18 +40,15 @@ const FALLBACK_SCOPE = "body:not(.super-cursor-active)";
 const joinWithScope = (scope: string, selectors: string[]) =>
   selectors.map((selector) => `${scope} ${selector}`).join(",\n      ");
 
-const INTERACTIVE_STYLE_SCOPE = joinWithScope(
-  FALLBACK_SCOPE,
-  INTERACTIVE_TARGETS
-);
+const INTERACTIVE_STYLE_SCOPE = joinWithScope(FALLBACK_SCOPE, INTERACTIVE_TARGETS);
 const INTERACTIVE_CHILD_SCOPE = joinWithScope(
   FALLBACK_SCOPE,
-  INTERACTIVE_TARGETS.map((selector) => `${selector} *`)
+  INTERACTIVE_TARGETS.map((s) => `${s} *`)
 );
 const TEXT_STYLE_SCOPE = joinWithScope(FALLBACK_SCOPE, TEXT_TARGETS);
 const TEXT_CHILD_SCOPE = joinWithScope(
   FALLBACK_SCOPE,
-  TEXT_TARGETS.map((selector) => `${selector} *`)
+  TEXT_TARGETS.map((s) => `${s} *`)
 );
 
 const AmazingCursor = () => {
@@ -62,30 +59,18 @@ const AmazingCursor = () => {
   const [isPressed, setIsPressed] = useState(false);
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return undefined;
-    }
-
+    if (typeof window === "undefined") return;
     const media = window.matchMedia("(pointer: fine)");
     const update = () => setEnabled(media.matches);
-
     update();
     media.addEventListener("change", update);
-
-    return () => {
-      media.removeEventListener("change", update);
-    };
+    return () => media.removeEventListener("change", update);
   }, []);
 
   useEffect(() => {
-    if (typeof document === "undefined") {
-      return undefined;
-    }
-
+    if (typeof document === "undefined") return;
     const existing = document.getElementById(STYLE_TAG_ID);
-    if (existing) {
-      existing.remove();
-    }
+    if (existing) existing.remove();
 
     const style = document.createElement("style");
     style.id = STYLE_TAG_ID;
@@ -105,18 +90,12 @@ const AmazingCursor = () => {
         cursor: url("${BIBATA_TEXT}") 12 12, text !important;
       }
     `;
-
     document.head.appendChild(style);
-
-    return () => {
-      style.remove();
-    };
+    return () => style.remove();
   }, []);
 
   useEffect(() => {
-    if (!enabled || typeof window === "undefined") {
-      return undefined;
-    }
+    if (!enabled || typeof window === "undefined") return;
 
     const body = document.body;
     body.classList.add("super-cursor-active");
@@ -124,25 +103,12 @@ const AmazingCursor = () => {
     const handleMove = (event: MouseEvent) => {
       setPosition({ x: event.clientX, y: event.clientY });
       setIsVisible(true);
-
       const target = event.target as HTMLElement | null;
+      if (!target) return setKind("default");
 
-      if (target) {
-        const textTarget = target.closest(TEXT_SELECTOR);
-        if (textTarget) {
-          setKind("text");
-          return;
-        }
-
-        const clickableTarget = target.closest(CLICKABLE_SELECTOR);
-        if (clickableTarget) {
-          setKind("clickable");
-        } else {
-          setKind("default");
-        }
-      } else {
-        setKind("default");
-      }
+      if (target.closest(TEXT_SELECTOR)) return setKind("text");
+      if (target.closest(CLICKABLE_SELECTOR)) return setKind("clickable");
+      setKind("default");
     };
 
     const handleLeave = () => {
@@ -150,19 +116,13 @@ const AmazingCursor = () => {
       setIsPressed(false);
     };
 
-    const handleEnter = () => {
-      setIsVisible(true);
-    };
+    const handleEnter = () => setIsVisible(true);
 
     const handleDown = (event: MouseEvent) => {
-      if (event.button === 0) {
-        setIsPressed(true);
-      }
+      if (event.button === 0) setIsPressed(true);
     };
 
-    const handleUp = () => {
-      setIsPressed(false);
-    };
+    const handleUp = () => setIsPressed(false);
 
     const handleVisibilityChange = () => {
       if (document.visibilityState !== "visible") {
@@ -189,9 +149,7 @@ const AmazingCursor = () => {
     };
   }, [enabled]);
 
-  if (!enabled) {
-    return null;
-  }
+  if (!enabled) return null;
 
   const sprite =
     kind === "text"
@@ -202,10 +160,8 @@ const AmazingCursor = () => {
 
   const offsetX = kind === "text" ? 12 : kind === "clickable" ? 4 : 0;
   const offsetY = kind === "text" ? 12 : kind === "clickable" ? 2 : 0;
-
   const scale =
     kind === "text" ? 1 : isPressed ? 0.92 : kind === "clickable" ? 1.08 : 1;
-
   const dropShadow =
     kind === "text"
       ? "drop-shadow(0 1px 1px rgba(0,0,0,0.45))"
@@ -217,10 +173,7 @@ const AmazingCursor = () => {
     <div
       aria-hidden
       className="pointer-events-none fixed inset-0 z-[9999]"
-      style={{
-        opacity: isVisible ? 1 : 0,
-        transition: "opacity 120ms ease-out",
-      }}
+      style={{ opacity: isVisible ? 1 : 0, transition: "opacity 120ms ease-out" }}
     >
       <span
         style={{
