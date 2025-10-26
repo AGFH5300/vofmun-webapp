@@ -5,10 +5,10 @@ type CursorKind = "default" | "clickable" | "text";
 const INTERACTIVE_TARGETS = [
   "a",
   "button",
-  "[role=\"button\"]",
-  "[data-super-cursor=\"interactive\"]",
-  "input[type=\"checkbox\"]",
-  "input[type=\"radio\"]",
+  '[role="button"]',
+  '[data-super-cursor="interactive"]',
+  'input[type="checkbox"]',
+  'input[type="radio"]',
   "select",
   "summary",
   ".cursor-pointer",
@@ -17,8 +17,8 @@ const INTERACTIVE_TARGETS = [
 const TEXT_TARGETS = [
   "input",
   "textarea",
-  "[contenteditable=\"true\"]",
-  "[data-super-cursor=\"text\"]",
+  '[contenteditable="true"]',
+  '[data-super-cursor="text"]',
   ".cursor-text",
 ];
 
@@ -66,9 +66,7 @@ const INTERACTIVE_ARIA_PRESSED_SCOPE = joinWithScope(
 );
 const INTERACTIVE_ARIA_PRESSED_CHILD_SCOPE = joinWithScope(
   FALLBACK_SCOPE,
-  INTERACTIVE_TARGETS.map(
-    (selector) => `${selector}[aria-pressed="true"] *`
-  )
+  INTERACTIVE_TARGETS.map((selector) => `${selector}[aria-pressed="true"] *`)
 );
 const TEXT_STYLE_SCOPE = joinWithScope(FALLBACK_SCOPE, TEXT_TARGETS);
 const TEXT_CHILD_SCOPE = joinWithScope(
