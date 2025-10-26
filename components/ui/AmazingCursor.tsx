@@ -57,22 +57,12 @@ const AmazingCursor = () => {
     const body = document.body;
     body.classList.add('super-cursor-active');
 
-    const handleMove = (event: MouseEvent) => {
-      setPosition({ x: event.clientX, y: event.clientY });
-      setIsVisible(true);
+    const handleMove = (e: MouseEvent) => {
+      setPosition({ x: e.clientX, y: e.clientY });
 
-      const target = event.target as HTMLElement | null;
-
-      if (target) {
-        const clickable = target.closest(CLICKABLE_SELECTOR);
-        const textField = target.closest(TEXT_SELECTOR);
-
-        setIsClickable(Boolean(clickable));
-        setIsTextField(Boolean(textField));
-      } else {
-        setIsClickable(false);
-        setIsTextField(false);
-      }
+      const el = e.target as HTMLElement;
+      setIsClickable(!!el?.closest(CLICKABLE_SELECTOR));
+      setIsTextField(!!el?.closest(TEXT_SELECTOR));
     };
 
     const handleLeave = () => setIsVisible(false);
@@ -206,4 +196,3 @@ const AmazingCursor = () => {
 };
 
 export default AmazingCursor;
-
