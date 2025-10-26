@@ -26,10 +26,9 @@ const AmazingCursor = () => {
   const [isClickable, setIsClickable] = useState(false);
   const [isTextField, setIsTextField] = useState(false);
   const [enabled, setEnabled] = useState(false);
+
   useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
+    if (typeof window === 'undefined') return;
 
     const media = window.matchMedia('(pointer: fine)');
     const update = () => setEnabled(media.matches);
@@ -37,35 +36,21 @@ const AmazingCursor = () => {
     update();
     media.addEventListener('change', update);
 
-    return () => {
-      media.removeEventListener('change', update);
-    };
+    return () => media.removeEventListener('change', update);
   }, []);
 
   useEffect(() => {
-    if (!enabled || typeof window === 'undefined') {
-      return;
-    }
+    if (!enabled || typeof window === 'undefined') return;
 
     const body = document.body;
     body.classList.add('super-cursor-active');
 
     const handleMove = (event: MouseEvent) => {
       setPosition({ x: event.clientX, y: event.clientY });
-      setIsVisible(true);
 
-      const target = event.target as HTMLElement | null;
-
-      if (target) {
-        const clickable = target.closest(CLICKABLE_SELECTOR);
-        const textField = target.closest(TEXT_SELECTOR);
-
-        setIsClickable(Boolean(clickable));
-        setIsTextField(Boolean(textField));
-      } else {
-        setIsClickable(false);
-        setIsTextField(false);
-      }
+      const el = event.target as HTMLElement;
+      setIsClickable(!!el?.closest(CLICKABLE_SELECTOR));
+      setIsTextField(!!el?.closest(TEXT_SELECTOR));
     };
 
     const handleLeave = () => setIsVisible(false);
@@ -89,9 +74,7 @@ const AmazingCursor = () => {
     };
   }, [enabled]);
 
-  if (!enabled) {
-    return null;
-  }
+  if (!enabled) return null;
 
   const scale = isPressed ? 0.94 : isClickable ? 1.04 : 1;
   const pointerStroke = '#000000';
@@ -174,4 +157,3 @@ const AmazingCursor = () => {
 };
 
 export default AmazingCursor;
-

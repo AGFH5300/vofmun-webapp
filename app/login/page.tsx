@@ -184,7 +184,7 @@ const Login = () => {
               <img
                 width={200}
                 height={200}
-                src="/logo.svg"
+                src="logo.svg"
                 alt="VOFMUN"
                 className="mx-auto"
               />
@@ -320,7 +320,7 @@ const Login = () => {
                 ) : (
                   <div className="flex items-center justify-center text-[#FFFDFB]">
                     <Rocket size={18} className="mr-2 text-[#FFFDFB]" />
-                    <span className="text-[#FFFDFB]">Enter MUN Hub</span>
+                    <span className="text-[#FFFDFB]">Enter VOFMUN ONE</span>
                   </div>
                 )}
               </button>
