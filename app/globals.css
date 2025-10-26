@@ -91,15 +91,15 @@ body {
   line-height: 1.6;
 }
 
-body.super-cursor-active {
-  cursor: none;
-}
-
-body.super-cursor-active input,
-body.super-cursor-active textarea,
-body.super-cursor-active [contenteditable="true"],
-body.super-cursor-active [data-super-cursor="text"] {
-  cursor: text;
+/*
+  The AmazingCursor component hides the native cursor while its overlay is
+  active so we can render the Bibata SVG artwork in React. When the component
+  is disabled (for example on coarse pointers) the injected CSS falls back to
+  the system cursor.
+*/
+body.super-cursor-active,
+body.super-cursor-active * {
+  cursor: none !important;
 }
 
 /* Typography Styles - Complete New Design */
