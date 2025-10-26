@@ -91,16 +91,7 @@ body {
   line-height: 1.6;
 }
 
-body.super-cursor-active {
-  cursor: none;
-}
-
-body.super-cursor-active input,
-body.super-cursor-active textarea,
-body.super-cursor-active [contenteditable="true"],
-body.super-cursor-active [data-super-cursor="text"] {
-  cursor: text;
-}
+/* Cursor styling is applied globally by AmazingCursor's injected CSS. */
 
 /* Typography Styles - Complete New Design */
 
