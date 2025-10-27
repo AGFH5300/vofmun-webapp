@@ -166,11 +166,24 @@ const AmazingCursor = () => {
     const body = document.body;
     body.classList.add("super-cursor-active");
 
+    const resolveTarget = (event: MouseEvent) => {
+      const pointTarget = document.elementFromPoint(
+        event.clientX,
+        event.clientY
+      );
+
+      if (pointTarget) {
+        return pointTarget;
+      }
+
+      return event.target;
+    };
+
     const handleMove = (event: MouseEvent) => {
       setPosition({ x: event.clientX, y: event.clientY });
       setIsVisible(true);
 
-      setKind(getKindForTarget(event.target));
+      setKind(getKindForTarget(resolveTarget(event)));
     };
 
     const handleLeave = () => {
@@ -185,7 +198,7 @@ const AmazingCursor = () => {
 
     const handleDown = (event: MouseEvent) => {
       if (event.button === 0) {
-        const pressKind = getKindForTarget(event.target);
+        const pressKind = getKindForTarget(resolveTarget(event));
         setPressedKind(pressKind);
         setIsPressed(true);
       }
