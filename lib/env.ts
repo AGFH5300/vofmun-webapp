@@ -27,17 +27,19 @@ const collectEnvSources = (): EnvRecord[] => {
   return sources;
 };
 
-const envFromSources = Object.assign({}, ...collectEnvSources());
-
 export const getEnvValue = (
   ...keys: string[]
 ): string | undefined => {
+  const sources = collectEnvSources();
+
   for (const key of keys) {
-    const rawValue = envFromSources[key];
-    if (typeof rawValue === 'string') {
-      const trimmed = rawValue.trim();
-      if (trimmed.length > 0) {
-        return trimmed;
+    for (let index = sources.length - 1; index >= 0; index -= 1) {
+      const rawValue = sources[index]?.[key];
+      if (typeof rawValue === 'string') {
+        const trimmed = rawValue.trim();
+        if (trimmed.length > 0) {
+          return trimmed;
+        }
       }
     }
   }
@@ -61,4 +63,3 @@ export const assertEnvValue = (
 
   return value;
 };
-
