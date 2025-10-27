@@ -1,37 +1,36 @@
 import { createClient } from '@supabase/supabase-js';
 
-type EnvSource = Record<string, string | undefined> | undefined;
+type EnvRecord = Record<string, string | undefined>;
 
-type ImportMetaEnv = {
-  VITE_SUPABASE_URL?: string;
-  VITE_SUPABASE_ANON_KEY?: string;
-  NEXT_PUBLIC_SUPABASE_URL?: string;
-  NEXT_PUBLIC_SUPABASE_ANON_KEY?: string;
-} & Record<string, string | undefined>;
+const resolveEnv = (): EnvRecord => {
+  const sources: EnvRecord[] = [];
 
-type ImportMetaWithEnv = ImportMeta & {
-  env?: ImportMetaEnv;
+  if (typeof process !== 'undefined' && process.env) {
+    sources.push(process.env as EnvRecord);
+  }
+
+  if (typeof import.meta !== 'undefined') {
+    const meta = import.meta as ImportMeta & { env?: EnvRecord };
+    if (meta.env) {
+      sources.push(meta.env);
+    }
+  }
+
+  return Object.assign({}, ...sources);
 };
 
-const processEnv: EnvSource =
-  typeof process !== 'undefined' ? (process.env as EnvSource) : undefined;
-
-const importMetaEnv: ImportMetaEnv | undefined =
-  typeof import.meta !== 'undefined'
-    ? (import.meta as ImportMetaWithEnv).env
-    : undefined;
+const env = resolveEnv();
 
 const supabaseUrl =
-  processEnv?.VITE_SUPABASE_URL ??
-  processEnv?.NEXT_PUBLIC_SUPABASE_URL ??
-  importMetaEnv?.VITE_SUPABASE_URL ??
-  importMetaEnv?.NEXT_PUBLIC_SUPABASE_URL;
+  env.VITE_SUPABASE_URL ??
+  env.NEXT_PUBLIC_SUPABASE_URL ??
+  env.SUPABASE_URL;
 
 const supabaseKey =
-  processEnv?.VITE_SUPABASE_ANON_KEY ??
-  processEnv?.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
-  importMetaEnv?.VITE_SUPABASE_ANON_KEY ??
-  importMetaEnv?.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  env.VITE_SUPABASE_ANON_KEY ??
+  env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
+  env.SUPABASE_ANON_KEY ??
+  env.SUPABASE_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
   throw new Error('Missing Supabase environment variables');
@@ -40,6 +39,12 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
     persistSession: false,
+  },
+  global: {
+    headers: {
+      apikey: supabaseKey,
+      Authorization: `Bearer ${supabaseKey}`,
+    },
   },
 });
 
