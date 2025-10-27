@@ -1,10 +1,16 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl =
-  process.env.VITE_SUPABASE_URL ??
-  process.env.NEXT_PUBLIC_SUPABASE_URL ??
-  process.env.SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+import { getEnvValue } from './env';
+
+const supabaseUrl = getEnvValue(
+  'VITE_SUPABASE_URL',
+  'NEXT_PUBLIC_SUPABASE_URL',
+  'SUPABASE_URL',
+);
+const supabaseServiceKey = getEnvValue(
+  'SUPABASE_SERVICE_ROLE_KEY',
+  'SERVICE_ROLE_KEY',
+);
 
 let supabaseAdmin: ReturnType<typeof createClient> | null = null;
 
