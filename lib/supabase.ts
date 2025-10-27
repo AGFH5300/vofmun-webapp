@@ -1,27 +1,37 @@
 import { createClient } from '@supabase/supabase-js';
 
 type EnvSource = Record<string, string | undefined> | undefined;
+
+type ImportMetaEnv = {
+  VITE_SUPABASE_URL?: string;
+  VITE_SUPABASE_ANON_KEY?: string;
+  NEXT_PUBLIC_SUPABASE_URL?: string;
+  NEXT_PUBLIC_SUPABASE_ANON_KEY?: string;
+} & Record<string, string | undefined>;
+
 type ImportMetaWithEnv = ImportMeta & {
-  env?: Record<string, string | undefined>;
+  env?: ImportMetaEnv;
 };
 
-const getEnvValue = (env: EnvSource, key: string) => env?.[key];
+const processEnv: EnvSource =
+  typeof process !== 'undefined' ? (process.env as EnvSource) : undefined;
 
-const processEnv = typeof process !== 'undefined' ? process.env : undefined;
-const importMetaEnv =
+const importMetaEnv: ImportMetaEnv | undefined =
   typeof import.meta !== 'undefined'
-    ? ((import.meta as ImportMetaWithEnv).env as EnvSource)
+    ? (import.meta as ImportMetaWithEnv).env
     : undefined;
 
 const supabaseUrl =
-  getEnvValue(processEnv, 'NEXT_PUBLIC_SUPABASE_URL') ??
-  getEnvValue(processEnv, 'VITE_SUPABASE_URL') ??
-  getEnvValue(importMetaEnv, 'VITE_SUPABASE_URL');
+  processEnv?.VITE_SUPABASE_URL ??
+  processEnv?.NEXT_PUBLIC_SUPABASE_URL ??
+  importMetaEnv?.VITE_SUPABASE_URL ??
+  importMetaEnv?.NEXT_PUBLIC_SUPABASE_URL;
 
 const supabaseKey =
-  getEnvValue(processEnv, 'NEXT_PUBLIC_SUPABASE_ANON_KEY') ??
-  getEnvValue(processEnv, 'VITE_SUPABASE_ANON_KEY') ??
-  getEnvValue(importMetaEnv, 'VITE_SUPABASE_ANON_KEY');
+  processEnv?.VITE_SUPABASE_ANON_KEY ??
+  processEnv?.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
+  importMetaEnv?.VITE_SUPABASE_ANON_KEY ??
+  importMetaEnv?.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
   throw new Error('Missing Supabase environment variables');
