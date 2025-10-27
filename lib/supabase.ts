@@ -1,40 +1,26 @@
 import { createClient } from '@supabase/supabase-js';
 
-type EnvRecord = Record<string, string | undefined>;
+import { assertEnvValue, getEnvValue } from './env';
 
-const resolveEnv = (): EnvRecord => {
-  const sources: EnvRecord[] = [];
+const supabaseUrl = assertEnvValue(
+  'Supabase URL',
+  'VITE_SUPABASE_URL',
+  'NEXT_PUBLIC_SUPABASE_URL',
+  'SUPABASE_URL',
+);
 
-  if (typeof process !== 'undefined' && process.env) {
-    sources.push(process.env as EnvRecord);
-  }
+const supabaseKey = assertEnvValue(
+  'Supabase anonymous key',
+  'VITE_SUPABASE_ANON_KEY',
+  'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+  'SUPABASE_ANON_KEY',
+  'SUPABASE_KEY',
+);
 
-  if (typeof import.meta !== 'undefined') {
-    const meta = import.meta as ImportMeta & { env?: EnvRecord };
-    if (meta.env) {
-      sources.push(meta.env);
-    }
-  }
-
-  return Object.assign({}, ...sources);
-};
-
-const env = resolveEnv();
-
-const supabaseUrl =
-  env.VITE_SUPABASE_URL ??
-  env.NEXT_PUBLIC_SUPABASE_URL ??
-  env.SUPABASE_URL;
-
-const supabaseKey =
-  env.VITE_SUPABASE_ANON_KEY ??
-  env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
-  env.SUPABASE_ANON_KEY ??
-  env.SUPABASE_KEY;
-
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error('Missing Supabase environment variables');
-}
+const serviceKey = getEnvValue(
+  'SUPABASE_SERVICE_ROLE_KEY',
+  'SERVICE_ROLE_KEY',
+);
 
 const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
@@ -44,6 +30,7 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
     headers: {
       apikey: supabaseKey,
       Authorization: `Bearer ${supabaseKey}`,
+      ...(serviceKey ? { 'x-service-role-key': serviceKey } : {}),
     },
   },
 });
