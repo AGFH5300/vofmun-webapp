@@ -1,132 +1,174 @@
-import React from 'react'
-import {AdminRoute} from '@/components/protectedroute'
-import {toast} from 'sonner'
+import React from 'react';
+import { AdminRoute } from '@/components/protectedroute';
+import { toast } from 'sonner';
+import { motion } from 'framer-motion';
+import { Upload, ImageIcon, FileText, Sparkles } from 'lucide-react';
 
 const Page = () => {
-    const [content, setContent] = React.useState<string>("");
-    const [title, setTitle] = React.useState<string>("");
-    const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
+  const [content, setContent] = React.useState<string>("");
+  const [title, setTitle] = React.useState<string>("");
+  const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
 
-    const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setContent(e.target.value);
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setContent(e.target.value);
+  };
+  const handleTitleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setTitle(e.target.value);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedFile(e.target.files[0]);
     }
-    const handleTitleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setTitle(e.target.value);
-    }
-    
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            setSelectedFile(e.target.files[0]);
-        }
+  };
+
+  const handleAddUpdate = async () => {
+    if (!title.trim()) {
+      toast.error("Title is required");
+      return;
     }
 
-    const handleAddUpdate = async () => {
-        if (!title.trim()) {
-            toast.error("Title is required");
-            return;
-        }
-        
-        if (!content.trim()) {
-            toast.error("Content is required");
-            return;
-        }
-        
-        if (!selectedFile) {
-            toast.error("Image file is required");
-            return;
-        }
-
-        try {
-            const formData = new FormData();
-            formData.append('file', selectedFile);
-            formData.append('title', title);
-            formData.append('content', content);
-            const response = await fetch('/api/upload-image', {
-                method: 'POST',
-                body: formData,
-            });
-            
-            const result = await response.json();
-            
-            if (!response.ok) {
-                throw new Error(result.error || 'Failed to create update');
-            }
-            
-            setTitle("");
-            setContent("");
-            setSelectedFile(null);
-            toast.success("Update added successfully!");
-            const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-            if (fileInput) fileInput.value = "";
-            
-        } catch (error) {
-            console.error('Error adding update:', error);
-            toast.error("An unknown error occurred");
-        }
+    if (!content.trim()) {
+      toast.error("Content is required");
+      return;
     }
+
+    if (!selectedFile) {
+      toast.error("Image file is required");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('title', title);
+      formData.append('content', content);
+      const response = await fetch('/api/upload-image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to create update');
+      }
+
+      setTitle("");
+      setContent("");
+      setSelectedFile(null);
+      toast.success("Update added successfully!");
+      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+      if (fileInput) fileInput.value = "";
+
+    } catch (error) {
+      console.error('Error adding update:', error);
+      toast.error("An unknown error occurred");
+    }
+  };
 
   return (
     <AdminRoute>
-      <div className="flex flex-col items-center justify-center min-h-screen text-white p-4 sm:p-6 md:p-8">
-        <div className="flex flex-col md:flex-row flex-wrap items-start justify-center gap-6 w-full max-w-4xl animate-slidein-up" style={{animationDelay: '0.1s'}}>
-          <div className='text-white flex flex-col animate-fadein w-full md:w-1/3' style={{animationDelay: '0.2s'}}>
-            <p className="mb-2 font-medium animate-text-pop" style={{animationDelay: '0.3s'}}>Upload Image</p>
-            <label htmlFor="image-upload" className="flex flex-col items-center justify-center border-2 border-dashed border-gray-700 rounded-xl bg-gray-900 p-4 sm:p-6 cursor-pointer transition-all hover:border-blue-500 hover:bg-gray-800 focus-within:border-blue-500 w-full">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-blue-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12" /></svg>
-              <span className="text-gray-300 mb-2 text-center text-sm sm:text-base">Click or drag an image here to upload</span>
-              <input 
-                id="image-upload"
-                type="file" 
-                accept="image/jpeg, image/jpg" 
-                className="hidden"
-                onChange={handleFileChange}
-              />
-              {selectedFile && (
-                <div className="mt-4 flex flex-col items-center">
-                  <img
-                    src={URL.createObjectURL(selectedFile)}
-                    alt="Preview"
-                    className="w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-lg border border-gray-700 shadow-md mb-2"
-                    width={128}
-                    height={128}
-                  />
-                  <p className="text-xs sm:text-sm text-gray-300 break-all text-center">{selectedFile.name}</p>
+      <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-soft-ivory via-linen to-champagne">
+        <div className="pointer-events-none absolute inset-0 opacity-60">
+          <div className="absolute -left-16 top-28 h-72 w-72 rounded-full bg-deep-red/10 blur-3xl" />
+          <div className="absolute bottom-16 right-12 h-72 w-72 rounded-full bg-dark-burgundy/12 blur-3xl" />
+        </div>
+
+        <div className="relative mx-auto flex max-w-4xl flex-col gap-10 px-4 pb-16 pt-12 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-deep-red via-dark-burgundy to-rich-maroon text-white shadow-[0_25px_65px_-35px_rgba(112,30,30,0.7)]"
+          >
+            <div className="relative px-6 py-10 text-center sm:px-12">
+              <div className="mx-auto max-w-2xl space-y-4">
+                <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-white/30 bg-white/10">
+                  <Sparkles size={24} />
                 </div>
-              )}
-            </label>
-          </div>
-          
-          <div className='flex flex-col flex-1 animate-fadein w-full md:w-2/3' style={{animationDelay: '0.2s'}}>
-            <p className="mb-2 text-xl sm:text-2xl font-bold text-center animate-text-pop" style={{animationDelay: '0.3s'}}>Title</p>
-            <textarea 
-              className='p-3 sm:p-4 rounded-lg outline outline-gray-800 bg-gray-900 text-white resize-none h-[6rem] sm:h-[10rem] hover:scale-101 focus:animate-focus-scale-bounce transition-transform animate-fadein-up text-sm sm:text-base' 
-              style={{animationDelay: '0.4s'}}
-              value={title} 
-              placeholder='Write your update title here...' 
-              onChange={handleTitleChange}
-            ></textarea>
-            
-            <p className="mt-4 mb-2 text-center text-xl sm:text-2xl font-bold animate-text-pop" style={{animationDelay: '0.5s'}}>Content</p>
-            <textarea 
-              className='p-3 sm:p-4 rounded-lg outline outline-gray-800 bg-gray-900 text-white resize-none h-[12rem] sm:h-[24rem] hover:scale-101 focus:animate-focus-scale-bounce transition-transform animate-fadein-up text-sm sm:text-base' 
-              style={{animationDelay: '0.6s'}}
-              value={content} 
-              placeholder='Write your update content here...' 
-              onChange={handleContentChange}
-            ></textarea>
-            
-            <button 
-              onClick={handleAddUpdate}
-              className='p-3 sm:p-4 mt-4 sm:mt-6 bg-blue-600 hover:bg-blue-700 cursor-pointer transition-all hover:scale-102 duration-300 rounded-lg text-white font-semibold animate-btn-pop w-full sm:w-auto'
-              style={{animationDelay: '0.2s'}}
-            >
-              Add Update
-            </button>
-          </div>
+                <h1 className="font-heading text-4xl font-bold leading-tight sm:text-5xl">Admin Broadcast Center</h1>
+                <p className="text-base text-white/85 sm:text-lg">
+                  Share conference-wide updates, attach imagery, and alert delegates instantly.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.08 }}
+            className="rounded-[2.5rem] border border-white/40 bg-white/90 p-6 shadow-[0_18px_45px_-30px_rgba(28,28,28,0.6)] backdrop-blur"
+          >
+            <div className="grid gap-6 lg:grid-cols-[260px,1fr]">
+              <div className="space-y-4">
+                <p className="text-sm font-semibold uppercase tracking-[0.35em] text-dark-burgundy/70">Upload image</p>
+                <label htmlFor="image-upload" className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-soft-ivory/80 bg-soft-ivory/70 p-6 text-center transition hover:border-deep-red/40 hover:bg-soft-rose/50">
+                  <ImageIcon className="mb-3 text-deep-red" size={36} />
+                  <span className="text-sm text-dark-burgundy/70">Click or drag a JPG image</span>
+                  <input
+                    id="image-upload"
+                    type="file"
+                    accept="image/jpeg, image/jpg"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                  {selectedFile && (
+                    <div className="mt-4 flex flex-col items-center gap-2">
+                      <img
+                        src={URL.createObjectURL(selectedFile)}
+                        alt="Preview"
+                        className="h-32 w-32 rounded-2xl object-cover shadow"
+                      />
+                      <span className="break-all text-xs text-dark-burgundy/70">{selectedFile.name}</span>
+                    </div>
+                  )}
+                </label>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="mb-2 block text-sm font-semibold uppercase tracking-[0.35em] text-dark-burgundy/70">
+                    Title
+                  </label>
+                  <div className="relative">
+                    <FileText className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-dark-burgundy/30" size={18} />
+                    <textarea
+                      className="h-28 w-full resize-none rounded-2xl border border-soft-ivory/70 bg-soft-ivory/70 px-12 py-3 text-sm text-almost-black-green transition focus:border-deep-red focus:bg-white focus:outline-none"
+                      value={title}
+                      placeholder="Write your update title..."
+                      onChange={handleTitleChange}
+                    ></textarea>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-semibold uppercase tracking-[0.35em] text-dark-burgundy/70">
+                    Content
+                  </label>
+                  <textarea
+                    className="h-60 w-full resize-none rounded-2xl border border-soft-ivory/70 bg-soft-ivory/70 px-4 py-3 text-sm text-almost-black-green transition focus:border-deep-red focus:bg-white focus:outline-none"
+                    value={content}
+                    placeholder="Write your update content here..."
+                    onChange={handleContentChange}
+                  ></textarea>
+                </div>
+
+                <button
+                  onClick={handleAddUpdate}
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-deep-red px-6 py-3 text-sm font-semibold text-white shadow-[0_20px_45px_-28px_rgba(112,30,30,0.85)] transition hover:bg-dark-burgundy"
+                >
+                  <Upload size={18} />
+                  Publish update
+                </button>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </AdminRoute>
   );
-}
+};
 
-export default Page
+export default Page;
