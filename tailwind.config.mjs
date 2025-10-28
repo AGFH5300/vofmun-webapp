@@ -25,20 +25,23 @@ export default {
         heading: ["Merriweather", "Playfair Display", "Georgia", "serif"],
       },
       colors: {
-        // Primary Colors
-        'deep-red': '#641414',
-        'dark-burgundy': '#781414',
-        
-        // Neutral Colors  
-        'almost-black-green': '#001414',
-        'dark-navy': '#001428',
-        'cool-grey': '#DCDCDC',
-        'warm-light-grey': '#F0F0F0',
-        
+        // Brand Palette
+        'deep-red': '#701E1E',
+        'dark-burgundy': '#8B2424',
+        'rich-maroon': '#5C1616',
+
+        // Neutral Colors
+        'almost-black-green': '#1C1C1C',
+        'dark-navy': '#2A1A1A',
+        'cool-grey': '#D8CFCB',
+        'warm-light-grey': '#FFFDFB',
+
         // Highlight / Support Colors
-        'soft-rose': '#F0DCDC',
-        'soft-ivory': '#F0F0DC', 
-        'pale-aqua': '#DCF0F0',
+        'soft-rose': '#F5D6CB',
+        'soft-ivory': '#FFEBDD',
+        'pale-aqua': '#E2E6F6',
+        'champagne': '#F9E3D9',
+        'linen': '#FDF3ED',
       },
       animation: {
         'float': 'float 3s ease-in-out infinite',

@@ -28,22 +28,25 @@
   /* New Color Scheme Variables */
   
   /* Primary Colors */
-  --deep-red: hsl(0, 65%, 24%);
-  --dark-burgundy: hsl(0, 70%, 27%);
-  
+  --deep-red: #701E1E;
+  --dark-burgundy: #8B2424;
+  --rich-maroon: #5C1616;
+
   /* Neutral Colors */
-  --almost-black-green: hsl(180, 100%, 4%);
-  --dark-navy: hsl(225, 100%, 8%);
-  --cool-grey: hsl(0, 0%, 86%);
-  --warm-light-grey: hsl(0, 0%, 94%);
-  
+  --almost-black-green: #1C1C1C;
+  --dark-navy: #2A1A1A;
+  --cool-grey: #D8CFCB;
+  --warm-light-grey: #FFFDFB;
+
   /* Highlight / Support Colors */
-  --soft-rose: hsl(0, 33%, 90%);
-  --soft-ivory: hsl(50, 33%, 90%);
-  --pale-aqua: hsl(180, 33%, 90%);
-  
+  --soft-rose: #F5D6CB;
+  --soft-ivory: #FFEBDD;
+  --pale-aqua: #E2E6F6;
+  --champagne: #F9E3D9;
+  --linen: #FDF3ED;
+
   /* Semantic color mappings */
-  --background: var(--soft-ivory);
+  --background: var(--warm-light-grey);
   --foreground: var(--almost-black-green);
   --card: #FFFFFF;
   --card-foreground: var(--almost-black-green);
@@ -51,12 +54,12 @@
   --popover-foreground: var(--almost-black-green);
   --primary: var(--deep-red);
   --primary-foreground: #FFFFFF;
-  --secondary: var(--warm-light-grey);
+  --secondary: var(--soft-ivory);
   --secondary-foreground: var(--deep-red);
-  --muted: var(--cool-grey);
-  --muted-foreground: var(--almost-black-green);
-  --accent: var(--pale-aqua);
-  --accent-foreground: var(--dark-navy);
+  --muted: color-mix(in srgb, var(--cool-grey) 70%, white 30%);
+  --muted-foreground: color-mix(in srgb, var(--almost-black-green) 80%, white 20%);
+  --accent: var(--champagne);
+  --accent-foreground: var(--deep-red);
   --destructive: var(--dark-burgundy);
   --destructive-foreground: #FFFFFF;
   --border: var(--cool-grey);
